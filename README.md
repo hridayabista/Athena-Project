@@ -52,6 +52,7 @@ Here’s how Athena’s internal architecture works👇:
                                            | - PostgreSQL stores metadata & SLO history                                        |
                                            | - Example: New fraud model auto-deployed safely                                   |
                                            +-----------------------------------------------------------------------------------+
+
 💡 How It Works in Real-Time
 1) The Client (via SDK or gRPC) sends a live request (e.g., fraud detection).
 2) The Load Balancer routes it to an available Athena pod.
@@ -133,5 +134,6 @@ This project showcases:
 Author: Hridaya Bista 🧑‍💻
 Theme: "Speed Meets Intelligence — Real-Time AI at Scale."
 Version: 1.0.0
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
