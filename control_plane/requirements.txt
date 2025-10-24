@@ -7,3 +7,4 @@ pydantic==1.10.10
 prometheus-client==0.16.0
 pytest==7.4.0 
 httpx==0.24.1
+alembic==1.11.1
