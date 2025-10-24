@@ -11,5 +11,4 @@ target_link_libraries(athena_core PRIVATE Threads::Threads)
 
 # tests
 enable_testing()
-# FIX: Changed 'tests' to 'Tests' to match the actual directory name.
-add_subdirectory(Tests)
+add_subdirectory(tests)
