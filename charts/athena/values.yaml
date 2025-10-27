@@ -1,5 +1,0 @@
-controlPlane:
-  image: "ghcr.io/<owner>/athena-control-plane:latest"
-core:
-  image: "ghcr.io/<owner>/athena-core:latest"
-replicaCount: 1
