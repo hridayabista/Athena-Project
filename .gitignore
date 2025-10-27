@@ -1,0 +1,51 @@
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# IDE files (e.g., VS Code)
+.vscode/
+
+# Testing/Coverage files
+.pytest_cache/
+.coverage
+
+# C++ build artifacts
+athena/core/build/
+athena/core/*.o
+athena/core/*.so
+athena/core/*.a
+athena/core/*.exe
+
+# Node.js
+node_modules/
+.next/
+dist/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+.dockerenv
+.dockerignore
+docker-compose.override.yml
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production

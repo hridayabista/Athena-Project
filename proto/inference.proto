@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package athena.inference;
+
+option go_package = "athena/inference";
+
+message Empty {}
+
+message ModelRef {
+  string model_name = 1;
+  string version = 2;
+}
+
+message LoadReply {
+  bool ok = 1;
+  string message = 2;
+}
+
+message InferenceRequest {
+  string request_id = 1;
+  repeated float inputs = 2; // example numeric payload - adapt to your real input
+  string model_name = 3;
+  string model_version = 4;
+}
+
+message InferenceReply {
+  string request_id = 1;
+  repeated float outputs = 2;
+  double latency_ms = 3;
+  string status = 4;
+}
+
+message ModelStatusReply {
+  string model_name = 1;
+  string version = 2;
+  string status = 3;
+}
+
+service InferenceService {
+  rpc LoadModel(ModelRef) returns (LoadReply);
+  rpc UnloadModel(ModelRef) returns (LoadReply);
+  rpc GetModelStatus(ModelRef) returns (ModelStatusReply);
+  rpc RunInference(InferenceRequest) returns (InferenceReply);
+}
