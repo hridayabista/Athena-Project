@@ -1,0 +1,6 @@
+[submodule "athena"]
+	path = athena
+	url = https://github.com/hridayabista/athena.git
+[submodule "athena-ui"]
+	path = athena-ui
+	url = https://github.com/hridayabista/athena-ui.git
