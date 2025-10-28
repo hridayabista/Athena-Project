@@ -31,16 +31,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake pkg-config protobuf-compiler libprotobuf-dev libprotoc-dev libgrpc++-dev git
 
-      # Add a step to check the actual directory structure
-      - name: Check directory structure
-        run: |
-          pwd
-          ls -la
-          find . -name "CMakeLists.txt" -type f
-
       - name: Configure & build
-        # Adjust this path based on your actual repository structure
-        working-directory: athena/core # Change this if your CMakeLists.txt is elsewhere
+        # Adjusted path: core directory is in the root, not athena/core
+        working-directory: core 
         run: |
           mkdir -p build
           cd build
@@ -48,7 +41,8 @@ jobs:
           cmake --build . -- -j$(nproc)
 
       - name: Run C++ tests
-        working-directory: athena/core/build
+        # Adjusted path
+        working-directory: core/build
         run: |
           if [ -f CTestTestfile.cmake ] || [ -d tests ]; then
             ctest --output-on-failure || true
@@ -75,16 +69,19 @@ jobs:
       - name: Install build deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r athena/control_plane/requirements.txt
+          # Adjusted path: control_plane directory is in the root
+          python -m pip install -r control_plane/requirements.txt
           python -m pip install pytest grpcio grpcio-tools protobuf
 
       - name: Generate python gRPC stubs
         run: |
-          mkdir -p athena/control_plane/proto
-          python -m grpc_tools.protoc -Iathena/core/proto --python_out=athena/control_plane/proto --grpc_python_out=athena/control_plane/proto athena/core/proto/inference.proto
+          # Adjusted path: proto directory in control_plane, and proto files location
+          mkdir -p control_plane/proto
+          python -m grpc_tools.protoc -Icore/proto --python_out=control_plane/proto --grpc_python_out=control_plane/proto core/proto/inference.proto
 
       - name: Run pytest (control-plane)
-        working-directory: athena/control_plane
+        # Adjusted path
+        working-directory: control_plane
         run: |
           pytest -q
 
@@ -101,20 +98,24 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-          # Verify this path matches your actual package-lock.json location
-          cache-dependency-path: athena-ui/package-lock.json
+          # Adjusted path: package-lock.json is in the root
+          cache-dependency-path: package-lock.json 
 
       - name: Install dependencies (frontend)
-        working-directory: athena-ui
-        run: npm ci
+        # No need for working-directory if athena-ui was the root
+        # If athena-ui is a subdirectory, add: working-directory: athena-ui
+        # Based on your 'ls' output, it looks like the frontend *is* the root,
+        # and the directory name shown as 'control_plane' in your ls output might be misleading
+        # Let's assume the frontend files (package.json, etc.) are in the repo root
+        run: npm ci 
 
       - name: Lint (optional)
-        working-directory: athena-ui
+        # Same assumption as above
         run: |
           if npm run -s lint; then echo "lint ok"; else echo "lint failed but continuing"; fi
 
       - name: Build Next.js
-        working-directory: athena-ui
+        # Same assumption as above
         run: npm run build
 
   # -----------------------------
@@ -139,9 +140,15 @@ jobs:
           password: ${{ secrets.GHCR_PAT || github.token }}
       - name: Build and push control-plane image
         run: |
-          docker build -f athena/docker/control-plane.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest .
+          # Adjusted Dockerfile path if it's in the root or core directory
+          # Assuming control-plane Dockerfile might be in /control_plane or /docker
+          # You'll need to adjust this path based on where control-plane.Dockerfile actually is
+          # For now, assuming it's in /docker directory
+          docker build -f docker/control-plane.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest .
           docker push ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest
       - name: Build and push core image
         run: |
-          docker build -f athena/docker/athena-core.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-core:latest .
+          # Adjusted Dockerfile path - assuming it's in /docker directory
+          # You'll need to adjust this path based on where athena-core.Dockerfile actually is
+          docker build -f docker/athena-core.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-core:latest .
           docker push ghcr.io/${{ github.repository_owner }}/athena-core:latest
