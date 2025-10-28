@@ -31,8 +31,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake pkg-config protobuf-compiler libprotobuf-dev libprotoc-dev libgrpc++-dev git
 
+      # Add a step to check the actual directory structure
+      - name: Check directory structure
+        run: |
+          pwd
+          ls -la
+          find . -name "CMakeLists.txt" -type f
+
       - name: Configure & build
-        working-directory: athena/core
+        # Adjust this path based on your actual repository structure
+        working-directory: athena/core # Change this if your CMakeLists.txt is elsewhere
         run: |
           mkdir -p build
           cd build
@@ -93,6 +101,7 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
+          # Verify this path matches your actual package-lock.json location
           cache-dependency-path: athena-ui/package-lock.json
 
       - name: Install dependencies (frontend)
