@@ -1,0 +1,16 @@
+# athena/control_plane/requirements.txt
+alembic==1.13.3        # Database migration tool (keeping as is or updated)
+fastapi==0.115.4       # ASGI framework (updated from 0.95.2 for latest features/fixes)
+grpcio==1.68.0         # gRPC library for Python (updated from 1.64.1)
+grpcio-tools==1.68.0   # gRPC code generation tools (updated from 1.64.1 to match grpcio)
+httpx==0.27.2          # HTTP client (updated from 0.24.1, often used with FastAPI for testing/clients)
+prometheus-client==0.21.0 # Prometheus metrics library (updated from 0.16.0)
+protobuf==5.28.2       # Protocol buffers (keeping as is, ensure it's compatible with grpcio-tools)
+psycopg2-binary==2.9.10 # PostgreSQL adapter (updated from 2.9.9)
+pydantic==2.10.2       # Data validation (updated from 1.10.10 to match FastAPI requirements)
+pytest==8.3.3          # Testing framework (updated from 7.4.0)
+sqlalchemy==2.0.36     # ORM (updated from 2.0.20 for latest features/fixes)
+uvicorn[standard]==0.32.0 # ASGI server (updated from 0.22.0 for latest features/fixes)
+# --- NEW: Libraries for Observability ---
+sse-starlette==2.2.0   # Server-Sent Events support for FastAPI (added for /stream/logs)
+# --- END NEW ---
