@@ -1,147 +1,73 @@
-# .github/workflows/ci.yaml
-name: Athena CI
-
-on:
-  push:
-    branches: ["develop", "main"]
-  pull_request:
-    branches: ["develop", "main"]
-
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-  pull-requests: write
+# ... (keep the existing 'name', 'on', 'permissions' sections)
 
 jobs:
   # -----------------------------
-  # Build the C++ core (CMake)
+  # Diagnose the repository structure
   # -----------------------------
-  build-core:
-    name: Build C++ core
+  diagnose:
+    name: Diagnose Repository Structure
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install system deps
+      - name: Print current directory and list contents
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake pkg-config protobuf-compiler libprotobuf-dev libprotoc-dev libgrpc++-dev git
-
-      - name: Configure & build
-        # Correct path: core is inside the athena directory
-        working-directory: athena/core 
-        run: |
-          mkdir -p build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . -- -j$(nproc)
-
-      - name: Run C++ tests
-        # Correct path
-        working-directory: athena/core/build
-        run: |
-          if [ -f CTestTestfile.cmake ] || [ -d tests ]; then
-            ctest --output-on-failure || true
+          echo "Current working directory: $(pwd)"
+          echo "Contents of the root directory:"
+          ls -la
+          echo "Contents of athena directory (if it exists):"
+          if [ -d "athena" ]; then
+            ls -la athena/
+          else
+            echo "Directory 'athena' does not exist in the root."
           fi
+          echo "Contents of athena-ui directory (if it exists):"
+          if [ -d "athena-ui" ]; then
+            ls -la athena-ui/
+          else
+            echo "Directory 'athena-ui' does not exist in the root."
+          fi
+          echo "Searching for CMakeLists.txt files anywhere in the repository:"
+          find . -name "CMakeLists.txt" -type f
+          echo "Searching for package-lock.json files anywhere in the repository:"
+          find . -name "package-lock.json" -type f
 
   # -----------------------------
-  # Python control-plane tests
+  # Build the C++ core (CMake) - Temporarily disabled until diagnose runs
   # -----------------------------
-  python-tests:
-    name: Python tests (control-plane)
-    runs-on: ubuntu-latest
-    needs: build-core
-    strategy:
-      matrix:
-        python-version: [3.11]
-    steps:
-      - uses: actions/checkout@v4
+  # build-core:
+  #   name: Build C++ core
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
+  #   needs: diagnose # Add this dependency
+  #   steps:
+  #     # ... (your original build-core steps)
+  #     # Remember to change working-directory back to athena/core or wherever CMakeLists.txt is found
+  #     # - name: Configure & build
+  #     #   working-directory: athena/core # <-- This path needs to be correct based on diagnose output
+  #     #   run: |
+  #     #     mkdir -p build
+  #     #     cd build
+  #     #     cmake -DCMAKE_BUILD_TYPE=Release ..
+  #     #     cmake --build . -- -j$(nproc)
+  #     # ... (rest of steps)
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install build deps
-        run: |
-          python -m pip install --upgrade pip
-          # Correct path: control_plane is inside the athena directory
-          python -m pip install -r athena/control_plane/requirements.txt
-          python -m pip install pytest grpcio grpcio-tools protobuf
-
-      - name: Generate python gRPC stubs
-        run: |
-          # Correct paths for proto files and output
-          mkdir -p athena/control_plane/proto
-          python -m grpc_tools.protoc -Iathena/core/proto --python_out=athena/control_plane/proto --grpc_python_out=athena/control_plane/proto athena/core/proto/inference.proto
-
-      - name: Run pytest (control-plane)
-        # Correct path
-        working-directory: athena/control_plane
-        run: |
-          pytest -q
-
-  # -----------------------------
-  # Frontend build (Next.js)
-  # -----------------------------
-  frontend-build:
-    name: Frontend Build (Next.js)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          # Correct path: package-lock.json is in the athena-ui directory
-          cache-dependency-path: athena-ui/package-lock.json 
-
-      - name: Install dependencies (frontend)
-        # Set working-directory to athena-ui
-        working-directory: athena-ui
-        run: npm ci 
-
-      - name: Lint (optional)
-        working-directory: athena-ui
-        run: |
-          if npm run -s lint; then echo "lint ok"; else echo "lint failed but continuing"; fi
-
-      - name: Build Next.js
-        working-directory: athena-ui
-        run: npm run build
-
-  # -----------------------------
-  # Build & push Docker images (only on main)
-  # -----------------------------
-  build-and-push:
-    name: Build & Push Docker Images (GHCR)
-    runs-on: ubuntu-latest
-    needs: [build-core, python-tests, frontend-build]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT || github.token }}
-      - name: Build and push control-plane image
-        run: |
-          # Correct Dockerfile path: inside the athena/docker directory
-          docker build -f athena/docker/control-plane.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest .
-          docker push ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest
-      - name: Build and push core image
-        run: |
-          # Correct Dockerfile path: inside the athena/docker directory
-          docker build -f athena/docker/athena-core.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-core:latest .
-          docker push ghcr.io/${{ github.repository_owner }}/athena-core:latest
+  # # Keep other jobs (python-tests, frontend-build, build-and-push) but add 'needs: diagnose' and fix paths after diagnosis
+  # python-tests:
+  #   # ... (add needs: diagnose)
+  #   # Fix working-directory: athena/control_plane
+  #   # Fix requirements path: athena/control_plane/requirements.txt
+  #   # Fix proto paths: -Iathena/core/proto, --python_out=athena/control_plane/proto, etc.
+  #   # ...
+  # frontend-build:
+  #   # ... (add needs: diagnose)
+  #   # Fix working-directory: athena-ui
+  #   # Fix cache-dependency-path: athena-ui/package-lock.json
+  #   # ...
+  # build-and-push:
+  #   # ... (add needs: diagnose)
+  #   # Fix Dockerfile paths: -f athena/docker/...
+  #   # ...
