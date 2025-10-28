@@ -25,6 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true # <--- ADDED: To clone submodule content
 
       - name: Print Working Directory and List Contents
         run: |
@@ -40,10 +41,10 @@ jobs:
               echo "Found 'athena/core' directory."
               ls -la athena/core/
               if [ -f "athena/core/CMakeLists.txt" ]; then
-                 echo "Found CMakeLists.txt in athena/core/"
+                  echo "Found CMakeLists.txt in athena/core/"
               else
-                 echo "ERROR: CMakeLists.txt NOT FOUND in athena/core/"
-                 exit 1
+                  echo "ERROR: CMakeLists.txt NOT FOUND in athena/core/"
+                  exit 1
               fi
             else
               echo "ERROR: 'athena/core' directory not found inside 'athena'."
@@ -54,10 +55,10 @@ jobs:
               echo "Found 'athena/control_plane' directory."
               ls -la athena/control_plane/
               if [ -f "athena/control_plane/requirements.txt" ]; then
-                 echo "Found requirements.txt in athena/control_plane/"
+                  echo "Found requirements.txt in athena/control_plane/"
               else
-                 echo "ERROR: requirements.txt NOT FOUND in athena/control_plane/"
-                 exit 1
+                  echo "ERROR: requirements.txt NOT FOUND in athena/control_plane/"
+                  exit 1
               fi
             else
               echo "ERROR: 'athena/control_plane' directory not found inside 'athena'."
@@ -68,10 +69,10 @@ jobs:
               echo "Found 'athena/docker' directory."
               ls -la athena/docker/
               if [ -f "athena/docker/athena-core.Dockerfile" ] && [ -f "athena/docker/control-plane.Dockerfile" ]; then
-                 echo "Found both Dockerfiles in athena/docker/"
+                  echo "Found both Dockerfiles in athena/docker/"
               else
-                 echo "ERROR: One or both Dockerfiles NOT FOUND in athena/docker/"
-                 exit 1
+                  echo "ERROR: One or both Dockerfiles NOT FOUND in athena/docker/"
+                  exit 1
               fi
             else
               echo "ERROR: 'athena/docker' directory not found inside 'athena'."
@@ -86,16 +87,16 @@ jobs:
             echo "Found 'athena-ui' directory."
             ls -la athena-ui/
             if [ -f "athena-ui/package.json" ]; then
-                 echo "Found package.json in athena-ui/"
+                  echo "Found package.json in athena-ui/"
             else
-                 echo "ERROR: package.json NOT FOUND in athena-ui/"
-                 exit 1
+                  echo "ERROR: package.json NOT FOUND in athena-ui/"
+                  exit 1
             fi
             if [ -f "athena-ui/package-lock.json" ]; then
-                 echo "Found package-lock.json in athena-ui/"
+                  echo "Found package-lock.json in athena-ui/"
             else
-                 echo "ERROR: package-lock.json NOT FOUND in athena-ui/"
-                 exit 1
+                  echo "ERROR: package-lock.json NOT FOUND in athena-ui/"
+                  exit 1
             fi
           else
             echo "ERROR: 'athena-ui' directory not found in root."
@@ -114,6 +115,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true # <--- ADDED: To clone submodule content
 
       - name: Install System Dependencies
         run: |
@@ -150,6 +152,8 @@ jobs:
         python-version: [3.11]
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -183,6 +187,8 @@ jobs:
     needs: python-tests
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -215,6 +221,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
