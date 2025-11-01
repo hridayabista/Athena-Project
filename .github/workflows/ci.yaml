@@ -1,255 +1,255 @@
-# # .github/workflows/ci.yaml
-# name: Athena CI/CD Pipeline
+# .github/workflows/ci.yaml
+name: Athena CI/CD Pipeline
 
-# on:
-#   push:
-#     branches: ["develop", "main"]
-#   pull_request:
-#     branches: ["develop", "main"]
+on:
+  push:
+    branches: ["develop", "main"]
+  pull_request:
+    branches: ["develop", "main"]
 
-# permissions:
-#   contents: read
-#   packages: write
-#   id-token: write
-#   pull-requests: write
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  pull-requests: write
 
-# jobs:
-#   # -----------------------------
-#   # Job 1: Diagnose & Validate Structure (Run First)
-#   # -----------------------------
-#   diagnose-structure:
-#     name: Diagnose Repository Structure
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 5
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
+jobs:
+  # -----------------------------
+  # Job 1: Diagnose & Validate Structure (Run First)
+  # -----------------------------
+  diagnose-structure:
+    name: Diagnose Repository Structure
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#       - name: Print Working Directory and List Contents
-#         run: |
-#           echo "Current working directory: $(pwd)"
-#           echo "Root directory contents:"
-#           ls -la
-#           echo "Contents of 'athena' directory:"
-#           if [ -d "athena" ]; then
-#             echo "Found 'athena' directory."
-#             ls -la athena/
-#             echo "Contents of 'athena/core' directory:"
-#             if [ -d "athena/core" ]; then
-#               echo "Found 'athena/core' directory."
-#               ls -la athena/core/
-#               if [ -f "athena/core/CMakeLists.txt" ]; then
-#                   echo "Found CMakeLists.txt in athena/core/"
-#               else
-#                   echo "ERROR: CMakeLists.txt NOT FOUND in athena/core/"
-#                   exit 1
-#               fi
-#             else
-#               echo "ERROR: 'athena/core' directory not found inside 'athena'."
-#               exit 1
-#             fi
-#             echo "Contents of 'athena/control_plane' directory:"
-#             if [ -d "athena/control_plane" ]; then
-#               echo "Found 'athena/control_plane' directory."
-#               ls -la athena/control_plane/
-#               if [ -f "athena/control_plane/requirements.txt" ]; then
-#                   echo "Found requirements.txt in athena/control_plane/"
-#               else
-#                   echo "ERROR: requirements.txt NOT FOUND in athena/control_plane/"
-#                   exit 1
-#               fi
-#             else
-#               echo "ERROR: 'athena/control_plane' directory not found inside 'athena'."
-#               exit 1
-#             fi
-#             echo "Contents of 'athena/docker' directory:"
-#             if [ -d "athena/docker" ]; then
-#               echo "Found 'athena/docker' directory."
-#               ls -la athena/docker/
-#               if [ -f "athena/docker/athena-core.Dockerfile" ] && [ -f "athena/docker/control-plane.Dockerfile" ]; then
-#                   echo "Found both Dockerfiles in athena/docker/"
-#               else
-#                   echo "ERROR: One or both Dockerfiles NOT FOUND in athena/docker/"
-#                   exit 1
-#               fi
-#             else
-#               echo "ERROR: 'athena/docker' directory not found inside 'athena'."
-#               exit 1
-#             fi
-#           else
-#             echo "ERROR: 'athena' directory not found in root."
-#             exit 1
-#           fi
-#           echo "Contents of 'athena-ui' directory:"
-#           if [ -d "athena-ui" ]; then
-#             echo "Found 'athena-ui' directory."
-#             ls -la athena-ui/
-#             if [ -f "athena-ui/package.json" ]; then
-#                   echo "Found package.json in athena-ui/"
-#             else
-#                   echo "ERROR: package.json NOT FOUND in athena-ui/"
-#                   exit 1
-#             fi
-#             if [ -f "athena-ui/package-lock.json" ]; then
-#                   echo "Found package-lock.json in athena-ui/"
-#             else
-#                   echo "ERROR: package-lock.json NOT FOUND in athena-ui/"
-#                   exit 1
-#             fi
-#           else
-#             echo "ERROR: 'athena-ui' directory not found in root."
-#             exit 1
-#           fi
+      - name: Print Working Directory and List Contents
+        run: |
+          echo "Current working directory: $(pwd)"
+          echo "Root directory contents:"
+          ls -la
+          echo "Contents of 'athena' directory:"
+          if [ -d "athena" ]; then
+            echo "Found 'athena' directory."
+            ls -la athena/
+            echo "Contents of 'athena/core' directory:"
+            if [ -d "athena/core" ]; then
+              echo "Found 'athena/core' directory."
+              ls -la athena/core/
+              if [ -f "athena/core/CMakeLists.txt" ]; then
+                  echo "Found CMakeLists.txt in athena/core/"
+              else
+                  echo "ERROR: CMakeLists.txt NOT FOUND in athena/core/"
+                  exit 1
+              fi
+            else
+              echo "ERROR: 'athena/core' directory not found inside 'athena'."
+              exit 1
+            fi
+            echo "Contents of 'athena/control_plane' directory:"
+            if [ -d "athena/control_plane" ]; then
+              echo "Found 'athena/control_plane' directory."
+              ls -la athena/control_plane/
+              if [ -f "athena/control_plane/requirements.txt" ]; then
+                  echo "Found requirements.txt in athena/control_plane/"
+              else
+                  echo "ERROR: requirements.txt NOT FOUND in athena/control_plane/"
+                  exit 1
+              fi
+            else
+              echo "ERROR: 'athena/control_plane' directory not found inside 'athena'."
+              exit 1
+            fi
+            echo "Contents of 'athena/docker' directory:"
+            if [ -d "athena/docker" ]; then
+              echo "Found 'athena/docker' directory."
+              ls -la athena/docker/
+              if [ -f "athena/docker/athena-core.Dockerfile" ] && [ -f "athena/docker/control-plane.Dockerfile" ]; then
+                  echo "Found both Dockerfiles in athena/docker/"
+              else
+                  echo "ERROR: One or both Dockerfiles NOT FOUND in athena/docker/"
+                  exit 1
+              fi
+            else
+              echo "ERROR: 'athena/docker' directory not found inside 'athena'."
+              exit 1
+            fi
+          else
+            echo "ERROR: 'athena' directory not found in root."
+            exit 1
+          fi
+          echo "Contents of 'athena-ui' directory:"
+          if [ -d "athena-ui" ]; then
+            echo "Found 'athena-ui' directory."
+            ls -la athena-ui/
+            if [ -f "athena-ui/package.json" ]; then
+                  echo "Found package.json in athena-ui/"
+            else
+                  echo "ERROR: package.json NOT FOUND in athena-ui/"
+                  exit 1
+            fi
+            if [ -f "athena-ui/package-lock.json" ]; then
+                  echo "Found package-lock.json in athena-ui/"
+            else
+                  echo "ERROR: package-lock.json NOT FOUND in athena-ui/"
+                  exit 1
+            fi
+          else
+            echo "ERROR: 'athena-ui' directory not found in root."
+            exit 1
+          fi
 
-#   # -----------------------------
-#   # Job 2: Build C++ Core (CMake)
-#   # -----------------------------
-#   build-core:
-#     name: Build C++ Core
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 60
-#     needs: diagnose-structure # Ensure structure is validated first
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-#           submodules: true # <--- ADDED: To clone submodule content
+  # -----------------------------
+  # Job 2: Build C++ Core (CMake)
+  # -----------------------------
+  build-core:
+    name: Build C++ Core
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: diagnose-structure # Ensure structure is validated first
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true # <--- ADDED: To clone submodule content
 
-#       - name: Install System Dependencies
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y build-essential cmake pkg-config protobuf-compiler libprotobuf-dev libprotoc-dev libgrpc++-dev git
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake pkg-config protobuf-compiler libprotobuf-dev libprotoc-dev libgrpc++-dev git
 
-#       - name: Configure & Build C++ Core
-#         working-directory: athena/core # Use the correct path based on diagnosis
-#         run: |
-#           mkdir -p build
-#           cd build
-#           cmake -DCMAKE_BUILD_TYPE=Release ..
-#           cmake --build . -- -j$(nproc)
+      - name: Configure & Build C++ Core
+        working-directory: athena/core # Use the correct path based on diagnosis
+        run: |
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . -- -j$(nproc)
 
-#       - name: Run C++ Tests (if CTest is configured)
-#         working-directory: athena/core/build
-#         run: |
-#           if [ -f CTestTestfile.cmake ]; then
-#             echo "CTest found, running tests..."
-#             ctest --output-on-failure
-#           else
-#             echo "CTestTestfile.cmake not found, skipping C++ tests."
-#           fi
+      - name: Run C++ Tests (if CTest is configured)
+        working-directory: athena/core/build
+        run: |
+          if [ -f CTestTestfile.cmake ]; then
+            echo "CTest found, running tests..."
+            ctest --output-on-failure
+          else
+            echo "CTestTestfile.cmake not found, skipping C++ tests."
+          fi
 
-#   # -----------------------------
-#   # Job 3: Python Control Plane Tests
-#   # -----------------------------
-#   python-tests:
-#     name: Python Tests (Control Plane)
-#     runs-on: ubuntu-latest
-#     needs: build-core
-#     strategy:
-#       matrix:
-#         python-version: [3.11]
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           submodules: true # <--- ADDED: To clone submodule content
+  # -----------------------------
+  # Job 3: Python Control Plane Tests
+  # -----------------------------
+  python-tests:
+    name: Python Tests (Control Plane)
+    runs-on: ubuntu-latest
+    needs: build-core
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
-#       - name: Setup Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: ${{ matrix.python-version }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-#       - name: Install Python Dependencies
-#         run: |
-#           python -m pip install --upgrade pip
-#           # Use the correct path based on diagnosis
-#           python -m pip install -r athena/control_plane/requirements.txt
-#           python -m pip install pytest grpcio grpcio-tools protobuf
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Use the correct path based on diagnosis
+          python -m pip install -r athena/control_plane/requirements.txt
+          python -m pip install pytest grpcio grpcio-tools protobuf
 
-#       - name: Generate gRPC Stubs from Proto
-#         run: |
-#           # Use the correct paths based on diagnosis
-#           mkdir -p athena/control_plane/proto
-#           python -m grpc_tools.protoc -Iathena/core/proto --python_out=athena/control_plane/proto --grpc_python_out=athena/control_plane/proto athena/core/proto/inference.proto
+      - name: Generate gRPC Stubs from Proto
+        run: |
+          # Use the correct paths based on diagnosis
+          mkdir -p athena/control_plane/proto
+          python -m grpc_tools.protoc -Iathena/core/proto --python_out=athena/control_plane/proto --grpc_python_out=athena/control_plane/proto athena/core/proto/inference.proto
 
-#       - name: Run Pytest (Control Plane)
-#         working-directory: athena/control_plane # Use the correct path based on diagnosis
-#         run: |
-#           pytest -v
+      - name: Run Pytest (Control Plane)
+        working-directory: athena/control_plane # Use the correct path based on diagnosis
+        run: |
+          pytest -v
 
-#   # -----------------------------
-#   # Job 4: Frontend Build (Next.js)
-#   # -----------------------------
-#   frontend-build:
-#     name: Frontend Build (Next.js)
-#     runs-on: ubuntu-latest
-#     needs: python-tests
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           submodules: true # <--- ADDED: To clone submodule content
+  # -----------------------------
+  # Job 4: Frontend Build (Next.js)
+  # -----------------------------
+  frontend-build:
+    name: Frontend Build (Next.js)
+    runs-on: ubuntu-latest
+    needs: python-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
-#       - name: Use Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           cache: "npm"
-#           # Use the correct path based on diagnosis
-#           cache-dependency-path: athena-ui/package-lock.json
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          # Use the correct path based on diagnosis
+          cache-dependency-path: athena-ui/package-lock.json
 
-#       - name: Install Frontend Dependencies
-#         working-directory: athena-ui # Use the correct path based on diagnosis
-#         run: npm ci
+      - name: Install Frontend Dependencies
+        working-directory: athena-ui # Use the correct path based on diagnosis
+        run: npm ci
 
-#       - name: Lint (Optional)
-#         working-directory: athena-ui # Use the correct path based on diagnosis
-#         run: |
-#           if npm run -s lint; then echo "Lint passed"; else echo "Lint failed, but continuing"; fi
+      - name: Lint (Optional)
+        working-directory: athena-ui # Use the correct path based on diagnosis
+        run: |
+          if npm run -s lint; then echo "Lint passed"; else echo "Lint failed, but continuing"; fi
 
-#       - name: Build Next.js Application
-#         working-directory: athena-ui # Use the correct path based on diagnosis
-#         run: npm run build
+      - name: Build Next.js Application
+        working-directory: athena-ui # Use the correct path based on diagnosis
+        run: npm run build
 
-#   # -----------------------------
-#   # Job 5: Build & Push Docker Images (Only on main branch)
-#   # -----------------------------
-#   build-and-push:
-#     name: Build & Push Docker Images (GHCR)
-#     runs-on: ubuntu-latest
-#     needs: [build-core, python-tests, frontend-build]
-#     if: github.ref == 'refs/heads/main'
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           submodules: true # <--- ADDED: To clone submodule content
+  # -----------------------------
+  # Job 5: Build & Push Docker Images (Only on main branch)
+  # -----------------------------
+  build-and-push:
+    name: Build & Push Docker Images (GHCR)
+    runs-on: ubuntu-latest
+    needs: [build-core, python-tests, frontend-build]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true # <--- ADDED: To clone submodule content
 
-#       - name: Set up QEMU
-#         uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-#       - name: Log in to GitHub Container Registry (GHCR)
-#         uses: docker/login-action@v4
-#         with:
-#           registry: ghcr.io
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GHCR_PAT || github.token }}
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT || github.token }}
 
-#       - name: Build and Push Control Plane Image
-#         # Use the correct Dockerfile path based on diagnosis
-#         run: |
-#           docker build -f athena/docker/control-plane.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest .
-#           docker push ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest
+      - name: Build and Push Control Plane Image
+        # Use the correct Dockerfile path based on diagnosis
+        run: |
+          docker build -f athena/docker/control-plane.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest .
+          docker push ghcr.io/${{ github.repository_owner }}/athena-control-plane:latest
 
-#       - name: Build and Push Core Image
-#         # Use the correct Dockerfile path based on diagnosis
-#         run: |
-#           docker build -f athena/docker/athena-core.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-core:latest .
-#           docker push ghcr.io/${{ github.repository_owner }}/athena-core:latest
+      - name: Build and Push Core Image
+        # Use the correct Dockerfile path based on diagnosis
+        run: |
+          docker build -f athena/docker/athena-core.Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-core:latest .
+          docker push ghcr.io/${{ github.repository_owner }}/athena-core:latest
 
-#       - name: Build and Push Frontend Image
-#         # Build frontend image using the Dockerfile in athena-ui/
-#         run: |
-#           docker build -f athena-ui/Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-frontend:latest ./athena-ui
-#           docker push ghcr.io/${{ github.repository_owner }}/athena-frontend:latest
+      - name: Build and Push Frontend Image
+        # Build frontend image using the Dockerfile in athena-ui/
+        run: |
+          docker build -f athena-ui/Dockerfile -t ghcr.io/${{ github.repository_owner }}/athena-frontend:latest ./athena-ui
+          docker push ghcr.io/${{ github.repository_owner }}/athena-frontend:latest
